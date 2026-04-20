@@ -1,0 +1,69 @@
+<h2>Elderly Monitor — Design Spec</h2>
+<p class="subtitle">Review before implementation · 2026-04-20</p>
+
+<div class="section">
+  <h3>Problem</h3>
+  <p style="color:#94a3b8;font-size:0.85rem">Monitor an elderly person's wellbeing using devices already in the home. Detect abnormal inactivity and alert family — no expensive hardware, zero ongoing cost.</p>
+</div>
+
+<div class="section">
+  <h3>Architecture</h3>
+  <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:14px;font-family:monospace;font-size:0.78rem;color:#94a3b8;line-height:2">
+    <span style="color:#4ade80">Android (Termux)</span> ──→ Google Sheets API<br>
+    <span style="color:#a78bfa">Alexa (IFTTT)</span> &nbsp;&nbsp;&nbsp;──→ Google Sheets API<br>
+    <span style="color:#60a5fa">CCTV (kensho)</span> &nbsp;&nbsp;──→ Google Sheets API<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f59e0b">Apps Script Rules Engine</span> (every 10 min)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    <span style="color:#4ade80">Telegram</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span style="color:#f8fafc">Sheets Dashboard</span> + <span style="color:#ef4444">CallMeBot</span> (emergency)
+  </div>
+</div>
+
+<div class="section">
+  <h3>Data Sources — What Gets Tracked</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:0.78rem">
+    <tr style="background:#1e293b;color:#94a3b8"><th style="padding:6px 10px;text-align:left">Source</th><th style="padding:6px 10px;text-align:left">Signals</th><th style="padding:6px 10px;text-align:left">How</th></tr>
+    <tr style="border-bottom:1px solid #1e293b"><td style="padding:5px 10px;color:#4ade80">📱 Android</td><td style="padding:5px 10px;color:#cbd5e1">Movement, calls, notifications</td><td style="padding:5px 10px;color:#64748b">Termux script every 5 min</td></tr>
+    <tr style="border-bottom:1px solid #1e293b"><td style="padding:5px 10px;color:#a78bfa">🔊 Alexa</td><td style="padding:5px 10px;color:#cbd5e1">Timer set</td><td style="padding:5px 10px;color:#64748b">IFTTT → Sheets webhook</td></tr>
+    <tr><td style="padding:5px 10px;color:#60a5fa">📷 CCTV</td><td style="padding:5px 10px;color:#cbd5e1">Outdoor motion</td><td style="padding:5px 10px;color:#64748b">kensho-local patch</td></tr>
+  </table>
+  <p style="color:#64748b;font-size:0.72rem;margin-top:6px">Active hours: <strong style="color:#f8fafc">4:00 AM – 10:00 PM IST</strong> (respects mom's early wake-up)</p>
+</div>
+
+<div class="section">
+  <h3>Rules (editable in Sheets — no code change needed)</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:0.78rem">
+    <tr style="background:#1e293b;color:#94a3b8"><th style="padding:6px 10px;text-align:left">Rule</th><th style="padding:6px 10px;text-align:left">Threshold</th><th style="padding:6px 10px;text-align:left">Alert Level</th></tr>
+    <tr style="border-bottom:1px solid #1e293b"><td style="padding:5px 10px;color:#cbd5e1">No phone movement</td><td style="padding:5px 10px;color:#64748b">3 hrs, 4am–10pm</td><td style="padding:5px 10px;color:#fbbf24">⚠️ Warning</td></tr>
+    <tr style="border-bottom:1px solid #1e293b"><td style="padding:5px 10px;color:#cbd5e1">No phone usage (calls/notif)</td><td style="padding:5px 10px;color:#64748b">2 hrs, 4am–10pm</td><td style="padding:5px 10px;color:#fbbf24">⚠️ Warning</td></tr>
+    <tr style="border-bottom:1px solid #1e293b"><td style="padding:5px 10px;color:#cbd5e1">No morning activity by 6am</td><td style="padding:5px 10px;color:#64748b">daily check</td><td style="padding:5px 10px;color:#fbbf24">⚠️ Warning</td></tr>
+    <tr><td style="padding:5px 10px;color:#cbd5e1">Combined silence (all sources)</td><td style="padding:5px 10px;color:#64748b">2 hrs, 4am–10pm</td><td style="padding:5px 10px;color:#ef4444">🔴 Alert → Phone call</td></tr>
+  </table>
+  <p style="color:#64748b;font-size:0.72rem;margin-top:6px">1-hour cooldown per rule — no repeated alerts</p>
+</div>
+
+<div class="section">
+  <h3>Files to Build</h3>
+  <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:12px;font-family:monospace;font-size:0.75rem;color:#94a3b8;line-height:1.9">
+    elderly-monitor/<br>
+    ├── <span style="color:#4ade80">termux/monitor.sh</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;— runs on Android every 5 min<br>
+    ├── <span style="color:#60a5fa">sheets/rules_engine.gs</span> &nbsp;&nbsp;— Apps Script rules checker<br>
+    ├── <span style="color:#60a5fa">sheets/alert_sender.gs</span> &nbsp;&nbsp;— Telegram + CallMeBot dispatch<br>
+    ├── <span style="color:#a78bfa">kensho-patch/cctv_sheet_hook.py</span> — patches kensho-local<br>
+    └── <span style="color:#f59e0b">DEPLOY.md</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;— full setup guide
+  </div>
+</div>
+
+<div class="section">
+  <h3>Success Criteria</h3>
+  <ul style="color:#94a3b8;font-size:0.82rem;line-height:1.9">
+    <li>Phone activity in EVENTS sheet within 5 minutes</li>
+    <li>Alexa + CCTV events within 1 minute</li>
+    <li>DASHBOARD shows live last-seen for all 3 sources</li>
+    <li>Warning fires on Telegram at threshold</li>
+    <li>CallMeBot WhatsApp call fires on combined silence</li>
+    <li>Zero ongoing cost — runs on Google free tier</li>
+  </ul>
+</div>
+
+<p class="subtitle" style="margin-top:1rem">Approve this spec to proceed to implementation plan?</p>
