@@ -1,6 +1,7 @@
 /**
  * Alert delivery — Telegram messages + CallMeBot WhatsApp calls.
  * Called by rules_engine.gs.
+ * Relies on SHEET_ID constant declared in ingest.gs (same Apps Script project scope).
  */
 
 const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN';   // ← replace
