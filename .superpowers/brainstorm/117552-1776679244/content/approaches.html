@@ -1,0 +1,58 @@
+<h2>Elderly Monitoring System — Architecture Approaches</h2>
+<p class="subtitle">3 signals: Android accelerometer · CCTV outside · Alexa timer &nbsp;|&nbsp; Alerts: Telegram + Dashboard + Phone call</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Local Server (Ubuntu) + Telegram</h3>
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:6px;padding:10px;font-family:monospace;font-size:0.72rem;color:#94a3b8;line-height:1.9;margin-bottom:10px">
+        Android app → <span style="color:#4ade80">FastAPI (Ubuntu)</span> → rules engine<br>
+        Alexa IFTTT → <span style="color:#4ade80">FastAPI (Ubuntu)</span> → rules engine<br>
+        kensho-local CCTV → <span style="color:#4ade80">Telegram bot</span> → same rules engine<br>
+        rules engine → <span style="color:#f59e0b">Telegram alerts</span> + <span style="color:#f59e0b">Twilio call</span>
+      </div>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Zero cloud cost</li><li>Reuses kensho-local CCTV</li><li>Telegram already set up</li><li>Fast to build</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Ubuntu must be on 24/7</li><li>No access outside home WiFi (unless Tailscale)</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Cloud (GCP Free Tier) + Telegram</h3>
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:6px;padding:10px;font-family:monospace;font-size:0.72rem;color:#94a3b8;line-height:1.9;margin-bottom:10px">
+        Android app → <span style="color:#60a5fa">Cloud Run (GCP)</span> → Firestore<br>
+        Alexa IFTTT → <span style="color:#60a5fa">Cloud Run (GCP)</span> → Firestore<br>
+        kensho-cctv-telegram → <span style="color:#60a5fa">Cloud Run (GCP)</span> → Firestore<br>
+        Cloud Scheduler → rules engine → <span style="color:#f59e0b">Telegram + Twilio</span>
+      </div>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Always available, Ubuntu off is fine</li><li>Accessible from anywhere</li><li>GCP free tier covers this load</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>More setup (Cloud Run + Firestore)</li><li>kensho must be cloud version</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Hybrid — Local collect, Cloud rules (recommended)</h3>
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:6px;padding:10px;font-family:monospace;font-size:0.72rem;color:#94a3b8;line-height:1.9;margin-bottom:10px">
+        Android app → <span style="color:#4ade80">local FastAPI</span> → <span style="color:#60a5fa">Google Sheets</span> (log)<br>
+        Alexa IFTTT → <span style="color:#60a5fa">Google Sheets</span> (direct)<br>
+        kensho-local → <span style="color:#60a5fa">Google Sheets</span> (direct)<br>
+        <span style="color:#a78bfa">Apps Script trigger</span> → rules engine → <span style="color:#f59e0b">Telegram + Twilio</span>
+      </div>
+      <p>Google Sheets as the central data store — free, no infra, familiar. Apps Script runs the rules every 10 min. Android app posts to local FastAPI which writes to Sheets.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Zero cost</li><li>Google Sheets = instant dashboard</li><li>Same pattern as TrackWise Phase 5</li><li>Rules engine = Apps Script (no new infra)</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Android app needs Ubuntu on to post data (or posts directly to Sheets API)</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:1rem">My recommendation: <strong>Option C</strong> — Google Sheets as data hub, zero cost, reuses TrackWise pattern. Android app posts directly to Sheets API (no Ubuntu needed).</p>

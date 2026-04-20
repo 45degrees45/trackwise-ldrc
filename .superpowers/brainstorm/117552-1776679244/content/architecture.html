@@ -1,0 +1,76 @@
+<h2>Elderly Monitor — System Architecture</h2>
+<p class="subtitle">Phase 1: Rule-based · Zero cost · Open source</p>
+
+<div class="mockup">
+  <div class="mockup-header">Data Flow</div>
+  <div class="mockup-body">
+
+    <!-- Sources -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+      <div style="background:#0f172a;border:1px solid #166534;border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:1.2rem;margin-bottom:4px">📱</div>
+        <div style="color:#4ade80;font-size:0.75rem;font-weight:bold">Android Phone</div>
+        <div style="color:#64748b;font-size:0.65rem;margin-top:4px">Termux + Termux:API<br>reads accelerometer<br>every 5 min</div>
+      </div>
+      <div style="background:#0f172a;border:1px solid #1d4ed8;border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:1.2rem;margin-bottom:4px">📷</div>
+        <div style="color:#60a5fa;font-size:0.75rem;font-weight:bold">CCTV (outside)</div>
+        <div style="color:#64748b;font-size:0.65rem;margin-top:4px">kensho-local (existing)<br>detects entry/exit<br>motion events</div>
+      </div>
+      <div style="background:#0f172a;border:1px solid #7c3aed;border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:1.2rem;margin-bottom:4px">🔊</div>
+        <div style="color:#a78bfa;font-size:0.75rem;font-weight:bold">Alexa</div>
+        <div style="color:#64748b;font-size:0.65rem;margin-top:4px">IFTTT webhook<br>timer set events<br>→ direct to Sheets</div>
+      </div>
+    </div>
+
+    <!-- Arrow down -->
+    <div style="text-align:center;color:#334155;font-size:1.2rem;margin-bottom:12px">↓ &nbsp;↓ &nbsp;↓</div>
+
+    <!-- Central hub -->
+    <div style="background:#1e293b;border:2px solid #f59e0b;border-radius:8px;padding:14px;margin-bottom:14px;text-align:center">
+      <div style="color:#f59e0b;font-weight:bold;font-size:0.85rem;margin-bottom:6px">📊 Google Sheets — Central Hub</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px">
+        <div style="background:#0f172a;padding:6px;border-radius:4px;font-size:0.65rem;color:#94a3b8"><span style="color:#4ade80">EVENTS</span><br>all sensor logs</div>
+        <div style="background:#0f172a;padding:6px;border-radius:4px;font-size:0.65rem;color:#94a3b8"><span style="color:#60a5fa">RULES</span><br>thresholds config</div>
+        <div style="background:#0f172a;padding:6px;border-radius:4px;font-size:0.65rem;color:#94a3b8"><span style="color:#f59e0b">DASHBOARD</span><br>live status view</div>
+        <div style="background:#0f172a;padding:6px;border-radius:4px;font-size:0.65rem;color:#94a3b8"><span style="color:#a78bfa">ALERTS_LOG</span><br>alert history</div>
+      </div>
+    </div>
+
+    <!-- Rules engine -->
+    <div style="background:#0f172a;border:1px solid #334155;border-radius:8px;padding:12px;margin-bottom:14px;text-align:center">
+      <div style="color:#f8fafc;font-size:0.75rem;font-weight:bold;margin-bottom:4px">⚙️ Apps Script — Rules Engine (every 10 min)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px">
+        <div style="background:#1e293b;padding:6px;border-radius:4px;font-size:0.6rem;color:#94a3b8">No phone movement<br>for N hours<br><span style="color:#fbbf24">→ WARN</span></div>
+        <div style="background:#1e293b;padding:6px;border-radius:4px;font-size:0.6rem;color:#94a3b8">No activity<br>by 10am<br><span style="color:#fbbf24">→ WARN</span></div>
+        <div style="background:#1e293b;padding:6px;border-radius:4px;font-size:0.6rem;color:#94a3b8">No movement<br>+ no CCTV<br><span style="color:#ef4444">→ ALERT</span></div>
+      </div>
+    </div>
+
+    <!-- Arrow down -->
+    <div style="text-align:center;color:#334155;font-size:1.2rem;margin-bottom:12px">↓</div>
+
+    <!-- Outputs -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div style="background:#0f172a;border:1px solid #166534;border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:1rem;margin-bottom:4px">💬</div>
+        <div style="color:#4ade80;font-size:0.7rem;font-weight:bold">Telegram</div>
+        <div style="color:#64748b;font-size:0.6rem;margin-top:4px">Regular activity<br>updates + warnings</div>
+      </div>
+      <div style="background:#0f172a;border:1px solid #166534;border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:1rem;margin-bottom:4px">📊</div>
+        <div style="color:#4ade80;font-size:0.7rem;font-weight:bold">Sheets Dashboard</div>
+        <div style="color:#64748b;font-size:0.6rem;margin-top:4px">Live view for<br>family members</div>
+      </div>
+      <div style="background:#0f172a;border:1px solid #ef4444;border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:1rem;margin-bottom:4px">📞</div>
+        <div style="color:#f87171;font-size:0.7rem;font-weight:bold">CallMeBot</div>
+        <div style="color:#64748b;font-size:0.6rem;margin-top:4px">Anomaly only<br>WhatsApp call</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:1rem">Does this architecture look right? Any changes before we go deeper?</p>

@@ -1,0 +1,4 @@
+{"type":"server-started","port":59758,"host":"0.0.0.0","url_host":"192.168.1.103","url":"http://192.168.1.103:59758","screen_dir":"/home/jo/claude_projects/elderly-monitor/.superpowers/brainstorm/117552-1776679244/content","state_dir":"/home/jo/claude_projects/elderly-monitor/.superpowers/brainstorm/117552-1776679244/state"}
+{"type":"screen-added","file":"/home/jo/claude_projects/elderly-monitor/.superpowers/brainstorm/117552-1776679244/content/approaches.html"}
+{"type":"screen-added","file":"/home/jo/claude_projects/elderly-monitor/.superpowers/brainstorm/117552-1776679244/content/architecture.html"}
+{"type":"server-stopped","reason":"idle timeout"}
