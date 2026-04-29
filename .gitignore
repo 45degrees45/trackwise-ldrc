@@ -1,0 +1,41 @@
+# Secrets & credentials
+.env
+.env.*
+credentials.json
+service_account*.json
+*.pem
+*.key
+secrets/
+config/secrets*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+.npm/
+
+# Large data / models
+*.bin
+*.model
+*.gguf
+*.ckpt
+models/
+data/raw/
+*.db
+*.sqlite
+
+# System
+.DS_Store
+Thumbs.db
+*.log
